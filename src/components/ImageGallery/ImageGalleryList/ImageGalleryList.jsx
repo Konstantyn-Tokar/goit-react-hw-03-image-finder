@@ -6,9 +6,9 @@ function ImageGalleryList({ imageslist }) {
       {imageslist.map((image) => {
         return (
           <ImageGalleryItem
-            id={image.id}
-            digImg={image.largeImageURL}
-            smallImg={image.webformatURL}
+            key={image.id}
+            smallImg={image.poster_path}
+            digImg={image.backdrop_path}
           />
         );
       })}
