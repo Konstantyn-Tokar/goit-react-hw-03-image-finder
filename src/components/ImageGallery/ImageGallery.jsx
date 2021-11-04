@@ -6,7 +6,6 @@ import scroll from "../../helpers/scroll";
 import ImageGalleryList from "./ImageGalleryList";
 import Button from "../Button";
 import Modal from "../Modal";
-import Loader from "react-loader-spinner";
 
 import s from "./ImageGallery.module.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
@@ -19,6 +18,7 @@ class ImageGallery extends Component {
     status: "idle",
     showModal: false,
     bigImg: "",
+    louder: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -26,23 +26,27 @@ class ImageGallery extends Component {
     const nextName = this.props.imageName;
     const prevPage = prevState.page;
     const nextPage = this.state.page;
+    const { images } = this.state;
 
     if (prevName !== nextName) {
-      this.setState({ status: "pending" });
+      this.setState({ louder: true });
 
       doFach(nextName, nextPage)
-        .then((data) => this.setState({ images: data, status: "resolved" }))
+        .then((data) =>
+          this.setState({ images: data, status: "resolved", louder: false })
+        )
         .catch((error) => this.setState({ error, status: "resjected" }));
     }
 
     if (prevPage !== nextPage) {
-      this.setState({ status: "pending" });
+      this.setState({ louder: true });
       doFach(nextName, nextPage)
         .then((data) => {
-          this.setState((prevState) => ({
-            images: [...prevState.images, ...data],
+          this.setState({
+            images: [...images, ...data],
             status: "resolved",
-          }));
+            louder: false,
+          });
           scroll();
         })
         .catch((error) => this.setState({ error, status: "resjected" }));
@@ -50,9 +54,10 @@ class ImageGallery extends Component {
   }
 
   onLoadMore = () => {
-    this.setState((prevState) => ({
-      page: prevState.page + 1,
-    }));
+    const { page } = this.state;
+    this.setState({
+      page: page + 1,
+    });
   };
 
   toggleModal = () => {
@@ -72,7 +77,7 @@ class ImageGallery extends Component {
 
   render() {
     const {
-      state: { status, images, bigImg, showModal, error },
+      state: { status, images, bigImg, showModal, error, louder },
       onImageClick,
       onLoadMore,
       toggleModal,
@@ -82,18 +87,6 @@ class ImageGallery extends Component {
       return <h1>Введите тематику поиска изображения</h1>;
     }
 
-    if (status === "pending") {
-      return (
-        <Loader
-          className={s.loader}
-          type="TailSpin"
-          color="#00BFFF"
-          height={150}
-          width={150}
-        />
-      );
-    }
-
     if (status === "resjected") {
       return <h1>{error.message}</h1>;
     }
@@ -101,9 +94,12 @@ class ImageGallery extends Component {
     if (status === "resolved") {
       return (
         <div className={s.imageGallery}>
-          <ImageGalleryList imageslist={images} onImageClick={onImageClick} />
+          <ImageGalleryList
+            imageslist={images}
+            onImageClick={onImageClick}
+            louder={louder}
+          />
           {images.length > 1 && <Button onClick={onLoadMore} />}
-
           {showModal && (
             <Modal onClose={toggleModal}>
               <img className={s.modalImg} src={bigImg} alt="Картинка" />
