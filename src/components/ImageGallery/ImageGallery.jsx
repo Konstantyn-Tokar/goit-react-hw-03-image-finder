@@ -43,12 +43,9 @@ class ImageGallery extends Component {
             images: [...prevState.images, ...data],
             status: "resolved",
           }));
+          scroll();
         })
         .catch((error) => this.setState({ error, status: "resjected" }));
-    }
-
-    if (this.state.page > 1) {
-      scroll();
     }
   }
 
