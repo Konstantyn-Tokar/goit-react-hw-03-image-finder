@@ -1,19 +1,34 @@
 import ImageGalleryItem from "../ImageGalleryItem";
+import PropTypes from "prop-types";
 
-function ImageGalleryList({ imageslist }) {
+import s from "./ImageGallery.module.css";
+
+function ImageGalleryList({ imageslist, onImageClick }) {
   return (
-    <ul className="ImageGallery">
+    <ul className={s.ImageGallery}>
       {imageslist.map((image) => {
         return (
           <ImageGalleryItem
             key={image.id}
-            smallImg={image.poster_path}
-            digImg={image.backdrop_path}
+            smallImg={image.webformatURL}
+            digImg={image.largeImageURL}
+            onClick={onImageClick}
           />
         );
       })}
     </ul>
   );
 }
+
+ImageGalleryList.propTypes = {
+  imageslist: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+    }).isRequired
+  ),
+  onImageClick: PropTypes.func.isRequired,
+};
 
 export default ImageGalleryList;

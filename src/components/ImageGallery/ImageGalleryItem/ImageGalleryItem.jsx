@@ -1,20 +1,25 @@
-function ImageGalleryItem({ digImg, smallImg }) {
+import PropTypes from "prop-types";
+
+import s from "./ImageGalleryItem.module.css";
+
+function ImageGalleryItem({ digImg, smallImg, onClick }) {
   return (
-    <li>
+    <li className={s.ImageGalleryItem}>
       <img
-        src={
-          smallImg !== null
-            ? `https://image.tmdb.org/t/p/w300/${smallImg}`
-            : `https://image.tmdb.org/t/p/w300//s7D9c9kSdYbYO3hSvZHVBiUf9gk.jpg`
-        }
+        src={smallImg}
         alt="картинка"
-        data-img={
-          digImg !== null
-            ? `https://image.tmdb.org/t/p/original/${digImg}`
-            : `https://image.tmdb.org/t/p/original//s7D9c9kSdYbYO3hSvZHVBiUf9gk.jpg`
-        }
+        data-img={digImg}
+        className={s.image}
+        onClick={onClick}
       />
     </li>
   );
 }
+
+ImageGalleryItem.propType = {
+  digImg: PropTypes.string.isRequired,
+  smallImg: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
+
 export default ImageGalleryItem;
